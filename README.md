@@ -1,4 +1,4 @@
-# UniversalHealthCare
+# UHC - Universal Health Care
 UniversalHealthCare for India
 
 Thi repository is WIP and the goal is to prototype a possible solution to India's Universal Health Care policy. The repository contains - 

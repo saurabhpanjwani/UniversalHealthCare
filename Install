@@ -1,0 +1,18 @@
+To get the setup running do-
+1. Install go (https://golang.org/doc/install)
+Then do a "go version". The output should be similar to 
+bash-3.2$ go version
+go version go1.7.4 darwin/amd64"
+
+Ensure GOPATH is set - 
+bash-3.2$ echo $GOPATH
+/Users/abc/code/go
+
+2. Install Aerospike server -
+http://www.aerospike.com/docs/operations/install/
+
+3. Install Aerospike client (http://www.aerospike.com/docs/client/go/install) in your GOPATH
+go get github.com/aerospike/aerospike-client-go
+Optionally, do a "go get ." in the workspace
+
+4. 

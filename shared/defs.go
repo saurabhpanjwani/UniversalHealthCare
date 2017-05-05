@@ -49,7 +49,7 @@ type LogEntry struct {
 type RejectCode int
 
 const (
-    RejectUndefined RejectCode = iota + 1
+    RejectUndefined RejectCode = iota
     R001 //Data not uploaded within 7 days of transaction (transaction done within 24 hours of discharging patient).
     R002 //Data not uploaded within 7 days of transaction and also Transaction not done within 24 hours of discharging patient.
     R003 //Transaction not done within 24 hours after discharge
@@ -77,6 +77,7 @@ const (
     R0025 //Rejected as the diagnostic package is blocked independently which is against RSBY guidelines
     R0026 //Rejected due to as per package list length of stay (LOS) is ------------- days but patient admitted & discharged in ------------- days
     R0027 //Rejected due to pre-Authorization was not taken prior to performing hysterectomy on patient below 40 yrs of age as per MOLE guideline
+    MaxRejectCodes = R0027
 )
 
 type AuditStatus int
@@ -92,8 +93,8 @@ const (
 type PaymentInfo struct {
     Amount float32
     TimeOfPayment time.Time
-    PayerID string
-    PayeeID string
+    PayerID []byte
+    PayeeID []byte
     TxnID string
     Comments string
 }

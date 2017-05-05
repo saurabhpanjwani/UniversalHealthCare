@@ -10,7 +10,7 @@ import(
 type Claim struct{
     ClaimID []byte
     HospitalID []byte
-    InsurerTPAID []byte
+    InsurerID []byte
 
     DischargeTime time.Time 
     ClaimFileTime time.Time

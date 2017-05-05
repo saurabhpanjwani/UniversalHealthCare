@@ -10,13 +10,15 @@ import (
 type ClaimState int
 
 const (
-    Filed ClaimState = iota + 1
-    Documented
-    Approved
-    Paid
-    Acknowledged
-    Contested
-    OnHold
+    ClaimFiled ClaimState = iota + 1
+    ClaimDocumented
+    ClaimApproved
+    ClaimPaid
+    ClaimRejected
+    ClaimAcknowledged
+    ClaimContested
+    ClaimOnHold
+    MaxClaimState = ClaimOnHold
 )
 
 /* 
@@ -25,9 +27,9 @@ const (
 type ClaimType int
 
 const (
-    NoAction ClaimType = iota
-    Accepted 
-    Rejected
+    ClaimNoActionType ClaimType = iota
+    ClaimAcceptedType 
+    ClaimRejectedType
 )
 
 /* 
@@ -84,6 +86,7 @@ const (
     AuditUnderway
     AuditedAndFraud
     AuditedAndNotFraud
+    NotAudited
 )
 
 type PaymentInfo struct {

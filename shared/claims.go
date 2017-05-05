@@ -7,10 +7,10 @@ import(
 /* 
  * Define the claims data structure
  */
-type Claims struct{
-    ClaimID string
-    HospitalID string
-    InsurerTPAID string
+type Claim struct{
+    ClaimID []byte
+    HospitalID []byte
+    InsurerTPAID []byte
 
     DischargeTime time.Time 
     ClaimFileTime time.Time

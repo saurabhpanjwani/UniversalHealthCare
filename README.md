@@ -88,14 +88,18 @@ Claims data will contain the following parameters.
 Some of these data fields are interpreted according to states.
 
 For all states indicating rejected claims -
+
 12. Rejection Code - Indicates the reason for claim rejection, if flow type == Rejected. For all other flows, this code will be 0.
 
 For all states indicating settled claims -
+
 13. TDS Head - Name of the approving TPA authority, if flow type == Accepted. Null for all other flows.
 14. Payment information - Amount, Timestamp, From IC/TPA UHC ID, To Provider UHC ID, Payment Transaction ID, if flow type == Accepted and state > = Claim Paid. Null for all other states.
 
 For final state (Claim Acknowledged)
+
 15. Timestamp of Claim Acknowledgement - Date. Null for all other states.
 
 For claim that have IsFlagged == True
+
 16. Audit Log - Text - Optional field explaining results of audit in detail. It might be updated even in Claims Acknowledged state.

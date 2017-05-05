@@ -2,19 +2,19 @@ package main
 
 import (
 	"log"
-	"strconv"
 	"sync"
     "os/exec"
     "time"
+    "math/rand"
+    "reflect"
 
 	as "github.com/aerospike/aerospike-client-go"
 	shared "UniversalHealthCare/shared"
 )
 
 func main() {
-	binName := "AllOtherColumns"
-	size := 100
-	loop := 10000
+	size := 1
+	loop := 1
 
 	// Write loop number of independent batched writes
 	// Each batched write writes in size number of records
@@ -28,7 +28,7 @@ func main() {
 		//Spawn a new batch
 		go func() {
 			defer wg.Done()
-			writeRecords(shared.Client, binName, size)
+			writeRecords(shared.Client, size)
 		}()
 	}
 
@@ -43,7 +43,6 @@ func main() {
  */
 func writeRecords(
 	client *as.Client,
-	binName string,
 	size int,
 ) {
 	for i := 1; i <= size; i++ {
@@ -77,84 +76,107 @@ func writeRecords(
 
         //ClaimFileTime - Subratract years,months and days from today
         rand.Seed(time.Now().Unix())
-        claim.ClaimFileTime = time.now().AddDate(-1*rand.Intn(2), -1*rand.Intn(11), -1*rand.Intn(31))
+        claim.ClaimFileTime = time.Now().AddDate(-1*rand.Intn(2), -1*rand.Intn(11), -1*rand.Intn(31))
 
         //DischargeTime - a random hour between [0,25] subtracted from claim file time
         //25 is chosen so that some records wil exceed the 24 hour discharge filing period
-        claim.DischargeTime = claim.ClaimFileTime.Add(-1*rand.Intn(25))
+        claim.DischargeTime = claim.ClaimFileTime.Add(time.Duration(rand.Intn(-25))*time.Hour)
         
         //ClaimAmt - Minimum is Rs.10, Maximum Rs. 10cr
         minAmt := 10
         maxAmt := 100000000
-        claim.ClaimAmt = (minAmt + rand.Intn(maxAmt)) * rand.Float32()
+        claim.ClaimAmt = float32(minAmt + rand.Intn(maxAmt)) * rand.Float32()
 
         //Penalty, to a maximum of the claimAmt
-        claim.Penalty = 0.01*claim.ClaimAmt*(rand.Intn(100))
+        claim.Penalty = 0.01*claim.ClaimAmt*float32(rand.Intn(100))
 
         //ClaimState
-        claim.ClaimState = ClaimFiled + rand.Intn(MaxClaimState)
+        claim.ClaimState = shared.ClaimState(int(shared.ClaimFiled) + rand.Intn(int(shared.MaxClaimState)))
 
         //ClaimType
         switch claim.ClaimState {
-            ClaimFiled: 
+            case shared.ClaimFiled: 
                 fallthrough
-            ClaimDocumented:
+            case shared.ClaimDocumented:
                 fallthrough
-            ClaimOnHold:
-                claim.ClaimType = ClaimNoActiontype
+            case shared.ClaimOnHold:
+                claim.ClaimType = shared.ClaimNoActionType
 
-            ClaimApproved:
+            case shared.ClaimApproved:
                 fallthrough
-            ClaimPaid:
-                claim.ClaimType = ClaimAcceptedType
+            case shared.ClaimPaid:
+                claim.ClaimType = shared.ClaimAcceptedType
 
-            ClaimRejected:
-                claim.ClaimType = ClaimRejectedType
+            case shared.ClaimRejected:
+                claim.ClaimType = shared.ClaimRejectedType
                 
 
             default: // ClaimAcknowledged, or ClaimContested
-            if rand.Float32() >= 0.5 {
-                claim.ClaimType = ClaimAcknowledged
-            } else {
-                claim.ClaimType = ClaimContested
-            }
+                if rand.Float32() >= 0.5 {
+                    claim.ClaimType = shared.ClaimAcceptedType
+                } else {
+                    claim.ClaimType = shared.ClaimRejectedType
+                }
         }
 
         //Audit Status
         if (claim.ClaimState != shared.ClaimFiled &&
             claim.ClaimState != shared.ClaimDocumented) {
-            numAudited := 0.1   //10% get audited
-            numFraud   := 0.01  //1% are fradulent
+            numAudited := float32(0.1)   //10% get audited
+            numFraud   := float32(0.01)  //1% are fradulent
             auditRand := rand.Float32()
-            if auditRand < 0.005 {
-                claim.AuditType = AuditedAndFraud
-            } else if auditRand < 0.01 {
-                claim.AuditType = AuditedAndNotFraud
-            } else if auditRand < 0.1 {
-                claim.AuditType = AuditUnderway
+            if auditRand < numFraud/2 {
+                claim.AuditStatus = shared.AuditedAndFraud
+            } else if auditRand < numFraud {
+                claim.AuditStatus = shared.AuditedAndNotFraud
+            } else if auditRand < numAudited {
+                claim.AuditStatus = shared.AuditUnderway
             } else {
-                claim.AuditType = NotAudited
+                claim.AuditStatus = shared.NotAudited
             }
         }
-            
 
         //AuditLog
-
-        //logTrail
+        if (claim.AuditStatus != shared.NotAudited) {
+            claim.AuditLog = "The case was audited"
+        }
+    
+        //logTrail - This is updated as the claim's state changes.
+        // This is used in debugging, but will be left empty in this dummy DB
 
         //rejectCode
+        if claim.ClaimType == shared.ClaimRejectedType { 
+           claim.RejectCode = shared.RejectCode(rand.Intn(int(shared.MaxRejectCodes)) + 1)
+        }
 
         //TDS Head
-
-        //PaymentInfo
+        if claim.ClaimType == shared.ClaimAcceptedType {
+            claim.TDSHead = "Dr. Rajeev Kapoor"
+        }
 
         //AckTime
+        claim.AckTime = time.Now().Add(time.Duration(-1 + rand.Intn(-10))*time.Hour)
+
+        //PaymentInfo
+        claim.PaymentInfo = shared.PaymentInfo{123456.70, claim.AckTime.Add(time.Duration(-3)*time.Hour), 
+            claim.InsurerID, claim.HospitalID, "YHO2648721KSA", "Paid and Approved by Admin of Insurer" }
+
 		key, _ := as.NewKey(*shared.Namespace, *shared.Set, claim.ClaimID)
-		bin := as.NewBin(binName, strconv.Itoa(i))
 
-		log.Printf("Put: ns=%s set=%s key=%s bin=%s value=%s",
-			key.Namespace(), key.SetName(), key.Value(), bin.Name, bin.Value)
-
-		client.PutBins(shared.WritePolicy, key, bin)
+        // Write all field names and values into the corresponding index of a binMap
+        binsMap := make(map[string]interface{})
+		val := reflect.Indirect(reflect.ValueOf(claim))
+        for i := 0; i < val.NumField(); i++ {
+            binName := val.Type().Field(i).Name
+            binValue := val.Field(i).Interface()
+            binsMap[binName] = binValue
+		    log.Printf("Put: ns=%s set=%s key=%s bin=%s value=%s",
+			    key.Namespace(), key.SetName(), key.Value(), 
+                binName, binsMap[binName])
+        }
+		err = client.Put(shared.WritePolicy, key, binsMap)
+        if err != nil {
+            shared.PanicOnError(err)
+        }
 	}
 }

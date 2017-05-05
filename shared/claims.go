@@ -1,20 +1,24 @@
 package shared
 
+import(
+    "time"
+)
+
 /* 
  * Define the claims data structure
  */
-typedef Claims struct{
+type Claims struct{
     ClaimID string
     HospitalID string
     InsurerTPAID string
 
-    DischargeTime date
-    ClaimFileTime date
+    DischargeTime time.Time 
+    ClaimFileTime time.Time
 
-    ClaimAmt float
-    Penalty float
+    ClaimAmt float32
+    Penalty float32
 
-    ClaimStatus ClaimStatus
+    ClaimState  ClaimState
     ClaimType ClaimType
 
     AuditStatus AuditStatus
@@ -27,5 +31,5 @@ typedef Claims struct{
     TDSHead string
     PaymentInfo PaymentInfo
 
-    AckTime date
+    AckTime time.Time
 }

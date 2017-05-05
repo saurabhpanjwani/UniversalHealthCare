@@ -1,5 +1,9 @@
 package shared
 
+import (
+    "time"
+)
+
 /* 
  * Define state of a claim
  */
@@ -32,7 +36,7 @@ const (
 type LogEntry struct {
     FromState ClaimState
     ToState ClaimState
-    Timestamp date
+    Timestamp time.Time 
     ModifierID string
     Comments string
 }
@@ -43,7 +47,7 @@ type LogEntry struct {
 type RejectCode int
 
 const (
-    Undefined RejectCode = iota + 1
+    RejectUndefined RejectCode = iota + 1
     R001 //Data not uploaded within 7 days of transaction (transaction done within 24 hours of discharging patient).
     R002 //Data not uploaded within 7 days of transaction and also Transaction not done within 24 hours of discharging patient.
     R003 //Transaction not done within 24 hours after discharge
@@ -56,7 +60,6 @@ const (
     R0010 //During the course of investigation it reveals that the hospital involves in the practice of charging money to patient. 
     R0011 //Patient and hospital admission documents (medical documents, registration of patient in admission register etc.) not found in hospital of URN and package blocked.
     R0012 //Procedure done does not match the diagnosis.
-    R0013 //Rejected as deficiency of medical documents (specify the kind medical documents required, basis also).
     R0013 //Rejected as deficiency of medical documents (specify the kind medical documents required, basis also).
     R0014 //Duplicate claim – twice uploaded for same Hospitalization
     R0015 //Hospital was found to be involved in a major fraud.
@@ -77,8 +80,17 @@ const (
 type AuditStatus int
 
 const (
-    Undefined AuditStatus = iota
+    AuditUndefined AuditStatus = iota
     AuditUnderway
     AuditedAndFraud
     AuditedAndNotFraud
 )
+
+type PaymentInfo struct {
+    Amount float32
+    TimeOfPayment time.Time
+    PayerID string
+    PayeeID string
+    TxnID string
+    Comments string
+}

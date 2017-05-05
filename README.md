@@ -65,7 +65,7 @@ All claims not in the "Claim Acknowledged" state are considering outstanding.
 Closed Claims
 --------------
 
-All claims in "Claims Acknowledged" state are considered closed, and cannot be re-opened. Only the Audit flag may be set for a closed Claim, along with optional comments.
+All claims in "Claims Acknowledged" state are considered closed, and cannot be re-opened. Only the Audit and Fraud flags may be set for a closed Claim, along with optional comments.
 
 
 Claims Data Model
@@ -101,5 +101,25 @@ For final state (Claim Acknowledged)
 15. Timestamp of Claim Acknowledgement - Date. Null for all other states.
 
 For claim that have IsFlagged == True
+16. isFraud - Boolean - Indicating if the audit of a claim deems it as a fraudulent claim
+17. Audit Log - Text - Optional field explaining results of audit in detail. It might be updated even in Claims Acknowledged state.
 
-16. Audit Log - Text - Optional field explaining results of audit in detail. It might be updated even in Claims Acknowledged state.
+
+View of Data For Various Entities - Hospital / Health Care Provider
+---------------------------------------------------------------------
+
+1. Aggregate Claims View For a Time Period - Total number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action), Average time of claim settlement across all TPAs/ICs, Total number of cases audited, Average time taken to file a new claim after discharge of the beneficiary, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
+
+2. Per IC/TPA View For a Time Period - Number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action) with this IC/TPA, Average time of claim settlement for this IC/TPA, Number of clases audited by this TPA, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
+
+
+View of Data For Various Entities - IC/TPA
+-------------------------------------------
+
+1. Aggregate Claims View For a Time Period - Total number of claims documented for this IC/TPA, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action), Average time of claim settlement across all care providers, Total number of cases audited, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
+
+2. Per Hospital/Care Provider View For a Time Period - Number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action) with this IC/TPA, Average time of claim settlement for this IC/TPA, Number of clases audited by this TPA, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
+
+
+View of Data For Various Entities - Government
+-----------------------------------------------

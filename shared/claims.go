@@ -1,9 +1,5 @@
 package shared
 
-import(
-    "time"
-)
-
 /* 
  * Define the claims data structure
  */
@@ -12,8 +8,8 @@ type Claim struct{
     HospitalID []byte
     InsurerID []byte
 
-    DischargeTime time.Time 
-    ClaimFileTime time.Time
+    DischargeTime int64 
+    ClaimFileTime int64
 
     ClaimAmt float32
     Penalty float32
@@ -29,7 +25,7 @@ type Claim struct{
     RejectCode RejectCode
 
     TDSHead string
-    PaymentInfo PaymentInfo
+    PaymentInfo []byte
 
-    AckTime time.Time
+    AckTime int64
 }

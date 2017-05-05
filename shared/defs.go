@@ -1,9 +1,5 @@
 package shared
 
-import (
-    "time"
-)
-
 /* 
  * Define state of a claim
  */
@@ -38,7 +34,7 @@ const (
 type LogEntry struct {
     FromState ClaimState
     ToState ClaimState
-    Timestamp time.Time 
+    Timestamp int64
     ModifierID string
     Comments string
 }
@@ -92,7 +88,7 @@ const (
 
 type PaymentInfo struct {
     Amount float32
-    TimeOfPayment time.Time
+    TimeOfPayment int64 
     PayerID []byte
     PayeeID []byte
     TxnID string

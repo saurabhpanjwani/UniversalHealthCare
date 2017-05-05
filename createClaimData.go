@@ -7,14 +7,15 @@ import (
     "time"
     "math/rand"
     "reflect"
+    "encoding/json"
 
 	as "github.com/aerospike/aerospike-client-go"
 	shared "UniversalHealthCare/shared"
 )
 
 func main() {
-	size := 1
-	loop := 1
+	size := 2000
+	loop := 20
 
 	// Write loop number of independent batched writes
 	// Each batched write writes in size number of records
@@ -35,7 +36,7 @@ func main() {
 	// Wait for all go routines to finish
 	wg.Wait()
 
-	log.Println("Claims DB populated with %d records!", size*loop)
+	log.Println("Claims DB populated with ", size*loop, " records!")
 }
 
 /**
@@ -76,11 +77,12 @@ func writeRecords(
 
         //ClaimFileTime - Subratract years,months and days from today
         rand.Seed(time.Now().Unix())
-        claim.ClaimFileTime = time.Now().AddDate(-1*rand.Intn(2), -1*rand.Intn(11), -1*rand.Intn(31))
+        claimTime := time.Now().AddDate(-1*rand.Intn(2), -1*rand.Intn(11), -1*rand.Intn(31))
+        claim.ClaimFileTime = claimTime.Unix() 
 
         //DischargeTime - a random hour between [0,25] subtracted from claim file time
         //25 is chosen so that some records wil exceed the 24 hour discharge filing period
-        claim.DischargeTime = claim.ClaimFileTime.Add(time.Duration(rand.Intn(-25))*time.Hour)
+        claim.DischargeTime = claimTime.Add(time.Duration(-1*rand.Intn(25))*time.Hour).Unix()
         
         //ClaimAmt - Minimum is Rs.10, Maximum Rs. 10cr
         minAmt := 10
@@ -155,11 +157,18 @@ func writeRecords(
         }
 
         //AckTime
-        claim.AckTime = time.Now().Add(time.Duration(-1 + rand.Intn(-10))*time.Hour)
+        ackTime := time.Now().Add(time.Duration(-1 - rand.Intn(10))*time.Hour)
+        claim.AckTime = ackTime.Unix()
 
         //PaymentInfo
-        claim.PaymentInfo = shared.PaymentInfo{123456.70, claim.AckTime.Add(time.Duration(-3)*time.Hour), 
+        paymentInfo := shared.PaymentInfo{123456.70, ackTime.Add(time.Duration(-3)*time.Hour).Unix(), 
             claim.InsurerID, claim.HospitalID, "YHO2648721KSA", "Paid and Approved by Admin of Insurer" }
+
+        //Marshal PaymentInfo
+        claim.PaymentInfo, err = json.Marshal(paymentInfo)
+        if err != nil {
+            log.Println("Marshalling error:", err)
+        }
 
 		key, _ := as.NewKey(*shared.Namespace, *shared.Set, claim.ClaimID)
 
@@ -170,9 +179,9 @@ func writeRecords(
             binName := val.Type().Field(i).Name
             binValue := val.Field(i).Interface()
             binsMap[binName] = binValue
-		    log.Printf("Put: ns=%s set=%s key=%s bin=%s value=%s",
-			    key.Namespace(), key.SetName(), key.Value(), 
-                binName, binsMap[binName])
+		    //log.Printf("Put: ns=%s set=%s key=%s bin=%s value=%s",
+			//    key.Namespace(), key.SetName(), key.Value(), 
+            //    binName, binsMap[binName])
         }
 		err = client.Put(shared.WritePolicy, key, binsMap)
         if err != nil {

@@ -11,10 +11,8 @@ The repository contains -
 2. Data for now will be artificially generated, however, in a real end-to-end system, data source will be the actual system which ties in the Health Care Providers, Insurance Companies/TPAs, and end beneficiaries.
 
 
-Claims Lifecycle -
--------------------
-
-New Claim Workflow -
+New Claims Workflows -
+-----------------------
 
 Various possible flows for a claim -
 
@@ -50,21 +48,54 @@ The endflow of the claim is handled by the care provider -
 8. Claim Contested - The claim is contested for IC/TPA response - Payment / Rejected / No action
 
 
-Re-opened Claim Workflows -
----------------------------
-Claim Acknowledged -> Claim Flagged
+Flagged/Audited Claim Workflows -
+---------------------------------
 
-9. Claim Flagged - Claim may be re-opened by IC/TPA for suspected fraud analysis, or by health care providers to contest on a later date. This state indicates the claim is flagged for further analysis underway.
+< Claim state > Claims Filed > may set Claim Flagged
+
+Claim Flagged Bit - Claim may be flagged by IC/TPA for suspected fraud analysis, or by health care providers to contest on a later date. This state indicates the claim is flagged for further analysis underway.
+A claim may be flagged in any state of the claim beyond the initial filing.
+
+
+Outstanding Claims
+-------------------
+
+All claims not in the "Claim Acknowledged" state are considering outstanding.
+
+Closed Claims
+--------------
+
+All claims in "Claims Acknowledged" state are considered closed, and cannot be re-opened. Only the Audit flag may be set for a closed Claim, along with optional comments.
 
 
 Claims Data Model
 ------------------
+
 Claims data will contain the following parameters.
 
 1. Claim ID - Unique 32-byte UUID
 2. Hospital UHC ID - Unique 32-byte UUID assigned to Hospital during its UHC registration
 3. IC/TPA UHC ID - Unique 32-byte UUID assigned to IC/TPA during its UHC registration
 4. Amount of the Claim - Float
-5. Timestamp of Claim Filing - Date
-Penalty (1% of amount claimed per 15 days of delay) - Float
-6. Status of Claim - Enum (9 states as enumerated in the workflow)
+5. Beneficiary Discharge Timestamp - Date
+6. Timestamp of Claim Filing - Date
+7. Penalty (1% of amount claimed per 15 days of delay) - Float
+8. Status of Claim - Enum (9 states as enumerated in the workflow)
+9. Flow Type  - Accepted / Rejected / No Action - Indicate what kind of claim closure was acknowledged / contested / flagged. Default is No Action.
+10. IsFlagged - Boolean (Default False) - Indicates if this claim is/was under audit. Once set, this flag cannot be reset. Any closure on audit results will still follow the usual closure workflows.
+11. Log Trail - Array of Log Type {< From State > , < To State >, < Timestamp > , < UHC ID of the Modifier > , < Optional Comments > }. This will enumerate the trail of the claim lifecycle. 
+
+Some of these data fields are interpreted according to states.
+
+For all states indicating rejected claims -
+12. Rejection Code - Indicates the reason for claim rejection, if flow type == Rejected. For all other flows, this code will be 0.
+
+For all states indicating settled claims -
+13. TDS Head - Name of the approving TPA authority, if flow type == Accepted. Null for all other flows.
+14. Payment information - Amount, Timestamp, From IC/TPA UHC ID, To Provider UHC ID, Payment Transaction ID, if flow type == Accepted and state > = Claim Paid. Null for all other states.
+
+For final state (Claim Acknowledged)
+15. Timestamp of Claim Acknowledgement - Date. Null for all other states.
+
+For claim that have IsFlagged == True
+16. Audit Log - Text - Optional field explaining results of audit in detail. It might be updated even in Claims Acknowledged state.

@@ -15,4 +15,7 @@ http://www.aerospike.com/docs/operations/install/
 go get github.com/aerospike/aerospike-client-go
 Optionally, do a "go get ." in the workspace
 
-4. 
+4. Run the DB creator -
+go run createClaimData.go  -h <ip address of your AS server> -n <namespace> -s <setname>
+
+You are all set with 40k records!

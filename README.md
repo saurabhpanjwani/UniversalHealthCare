@@ -112,6 +112,8 @@ View of Data For Various Entities - Hospital / Health Care Provider
 
 2. Per IC/TPA View For a Time Period - Number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action) with this IC/TPA, Average time of claim settlement for this IC/TPA, Number of clases audited by this TPA, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
 
+3. Detailed View of a claim filed.
+
 
 View of Data For Various Entities - IC/TPA
 -------------------------------------------
@@ -119,6 +121,8 @@ View of Data For Various Entities - IC/TPA
 1. Aggregate Claims View For a Time Period - Total number of claims documented for this IC/TPA, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action), Average time of claim settlement across all care providers, Total number of cases audited, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
 
 2. Per Hospital/Care Provider View For a Time Period - Number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action) with this IC/TPA, Average time of claim settlement for this IC/TPA, Number of clases audited by this TPA, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
+
+3. Detailed view of a claim filed
 
 
 View of Data For Various Entities - Government

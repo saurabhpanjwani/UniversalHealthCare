@@ -4,9 +4,9 @@ package shared
  * Define the claims data structure
  */
 type Claim struct{
-    ClaimID []byte
-    HospitalID []byte
-    InsurerID []byte
+    ClaimID string
+    HospitalID string
+    InsurerID string
 
     DischargeTime int64 
     ClaimFileTime int64

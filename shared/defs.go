@@ -89,8 +89,8 @@ const (
 type PaymentInfo struct {
     Amount float32
     TimeOfPayment int64 
-    PayerID []byte
-    PayeeID []byte
+    PayerID string
+    PayeeID string
     TxnID string
     Comments string
 }

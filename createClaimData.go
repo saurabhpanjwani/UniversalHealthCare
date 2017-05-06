@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+    "fmt"
 	"sync"
     "os/exec"
     "time"
@@ -11,11 +12,41 @@ import (
 
 	as "github.com/aerospike/aerospike-client-go"
 	shared "UniversalHealthCare/shared"
+
+    uuid "github.com/google/uuid"
 )
 
+const CLAIMDB_HOSPID_SEC_INDEX string = "HospIDSecIndex"
+const CLAIMDB_ICTPAID_SEC_INDEX string = "ICTPAIDSecIndex"
+
+func createIndex(
+    policy *as.WritePolicy,
+    namespace string,
+    setName string,
+    indexName string,
+    binName string,
+    indexType as.IndexType,
+    ) {
+   
+    shared.Client.DropIndex(policy,namespace,setName, indexName)
+    task, err := shared.Client.CreateIndex(policy, namespace,
+        setName, indexName, binName, indexType)
+
+    shared.PanicOnError(err)
+    // to block until the Index is created
+    <-task.OnComplete()
+}
+
+
 func main() {
-	size := 2000
-	loop := 20
+	size := 2
+	loop := 2
+
+    //Create an AS secondary index
+    createIndex(shared.WritePolicy, *shared.Namespace, *shared.Set,
+    CLAIMDB_HOSPID_SEC_INDEX, "HospitalID", as.STRING)
+    createIndex(shared.WritePolicy, *shared.Namespace, *shared.Set,
+    CLAIMDB_ICTPAID_SEC_INDEX, "InsurerID", as.STRING)
 
 	// Write loop number of independent batched writes
 	// Each batched write writes in size number of records
@@ -53,27 +84,13 @@ func writeRecords(
         /*
          * Populate the fields of this claim record
          */
-
-        //ClaimID
-        claimID, err := exec.Command("uuidgen").Output()
-        if err != nil {
-            shared.PanicOnError(err)
-        }
-        claim.ClaimID = claimID
+        claim.ClaimID := uuid.New().String()
 
         //HospitalID
-        hospID, err := exec.Command("uuidgen").Output()
-        if err != nil {
-            shared.PanicOnError(err)
-        }
-        claim.HospitalID = hospID
+        claim.HospitalID = uuid.New().String()
 
         //InsurerID
-        insID, err := exec.Command("uuidgen").Output()
-        if err != nil {
-            shared.PanicOnError(err)
-        }
-        claim.InsurerID = insID
+        claim.InsurerID =uuid.New().String() 
 
         //ClaimFileTime - Subratract years,months and days from today
         rand.Seed(time.Now().Unix())

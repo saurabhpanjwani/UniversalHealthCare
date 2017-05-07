@@ -1,0 +1,55 @@
+Working with about 1 million records in the claims database-
+
+
+aql> show sets
++------------------+-------+----------------+---------+-------------------+------------+-------------------+----------+--------------+------------+
+| disable-eviction | ns    | set-enable-xdr | objects | stop-writes-count | set        | memory_data_bytes | deleting | truncate_lut | tombstones |
++------------------+-------+----------------+---------+-------------------+------------+-------------------+----------+--------------+------------+
+| "false"          | "uhc" | "use-default"  | 1000000 | 0                 | "claimsDB" | 551878156         | "false"  | 0            | 0          |
++------------------+-------+----------------+---------+-------------------+------------+-------------------+----------+--------------+------------+
+1 row in set (0.000 secs)
+OK
+
+
+Claims Model -
+
+aql> show bins
++-------+-----------------+-------+-----------+
+| quota | bin             | count | namespace |
++-------+-----------------+-------+-----------+
+| 32768 | "HospitalID"    | 16    | "uhc"     |
+| 32768 | "InsurerID"     | 16    | "uhc"     |
+| 32768 | "DischargeTime" | 16    | "uhc"     |
+| 32768 | "ClaimState"    | 16    | "uhc"     |
+| 32768 | "ClaimType"     | 16    | "uhc"     |
+| 32768 | "AckTime"       | 16    | "uhc"     |
+| 32768 | "ClaimID"       | 16    | "uhc"     |
+| 32768 | "AuditLog"      | 16    | "uhc"     |
+| 32768 | "Penalty"       | 16    | "uhc"     |
+| 32768 | "ClaimAmt"      | 16    | "uhc"     |
+| 32768 | "LogTrail"      | 16    | "uhc"     |
+| 32768 | "RejectCode"    | 16    | "uhc"     |
+| 32768 | "TDSHead"       | 16    | "uhc"     |
+| 32768 | "PaymentInfo"   | 16    | "uhc"     |
+| 32768 | "AuditStatus"   | 16    | "uhc"     |
+| 32768 | "ClaimFileTime" | 16    | "uhc"     |
++-------+-----------------+-------+-----------+
+16 rows in set (0.001 secs)
+OK
+
+Claims ID is a unique identifier that describes the paricular claim.
+
+Set the query run timeout to a larger value than the default 1000ms
+aql> set timeout 100000
+
+Bring on the modules to run aggregation-
+
+aql> register module 'govt.lua'
+OK, 1 module added.
+
+aql> register module 'hosp.lua'
+OK, 1 module added.
+
+aql> register module 'ic.lua'
+OK, 1 module added.
+

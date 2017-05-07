@@ -37,8 +37,8 @@ func createIndex(
 
 
 func main() {
-	size := 2
-	loop := 2
+	size := 20
+	loop := 20
 
     //Create an AS secondary index
     createIndex(shared.WritePolicy, *shared.Namespace, *shared.Set,
@@ -75,23 +75,42 @@ func writeRecords(
 	client *as.Client,
 	size int,
 ) {
-	for i := 1; i <= size; i++ {
+    var hospitals []string
+    var insurers []string
+
+	for i := 0; i < size; i++ {
         // A new claims record
         var claim shared.Claim
-
+        rand.Seed(time.Now().UnixNano())
+        
         /*
          * Populate the fields of this claim record
          */
         claim.ClaimID = uuid.New().String()
 
-        //HospitalID
-        claim.HospitalID = uuid.New().String()
+        // HospitalID
+        // Add entries with exisiting HospID or create a new HospID?
+        if (rand.Intn(2) == 1) && len(hospitals) > 0 {
+            // Pick from existing entries
+            claim.HospitalID = hospitals[rand.Intn(len(hospitals))] 
+        } else {
+            // New Hospital ID
+            claim.HospitalID = uuid.New().String()
+            hospitals = append(hospitals, claim.HospitalID)
+        }
 
-        //InsurerID
-        claim.InsurerID =uuid.New().String() 
+        // InsurerID
+        // Add entries with exisiting InsurerID or create a new InsurerID?
+        if (rand.Intn(2)==1) && len(insurers) > 0 {
+            // Pick from existing entries
+            claim.HospitalID = insurers[rand.Intn(len(insurers))] 
+        } else {
+            // New Insurer ID
+            claim.InsurerID =uuid.New().String() 
+            insurers = append(insurers, claim.InsurerID)
+        }
 
         //ClaimFileTime - Subratract years,months and days from today
-        rand.Seed(time.Now().Unix())
         claimTime := time.Now().AddDate(-1*rand.Intn(2), -1*rand.Intn(11), -1*rand.Intn(31))
         claim.ClaimFileTime = claimTime.Unix() 
 
@@ -172,7 +191,7 @@ func writeRecords(
         }
 
         //AckTime
-        ackTime := time.Now().Add(time.Duration(-1 - rand.Intn(10))*time.Hour)
+        ackTime := claim.ClaimFileTime.AddDate(0, -1*rand.Intn(2), -1*rand.Intn(31))
         claim.AckTime = ackTime.Unix()
 
         //PaymentInfo

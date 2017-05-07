@@ -2,9 +2,7 @@ package main
 
 import (
 	"log"
-    "fmt"
 	"sync"
-    "os/exec"
     "time"
     "math/rand"
     "reflect"
@@ -84,7 +82,7 @@ func writeRecords(
         /*
          * Populate the fields of this claim record
          */
-        claim.ClaimID := uuid.New().String()
+        claim.ClaimID = uuid.New().String()
 
         //HospitalID
         claim.HospitalID = uuid.New().String()
@@ -182,6 +180,7 @@ func writeRecords(
             claim.InsurerID, claim.HospitalID, "YHO2648721KSA", "Paid and Approved by Admin of Insurer" }
 
         //Marshal PaymentInfo
+        var err error
         claim.PaymentInfo, err = json.Marshal(paymentInfo)
         if err != nil {
             log.Println("Marshalling error:", err)

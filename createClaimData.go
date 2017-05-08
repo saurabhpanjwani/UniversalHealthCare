@@ -37,7 +37,7 @@ func createIndex(
 
 
 func main() {
-	size := 2000
+	size := 10000
 	loop := 20
 
     //Create an AS secondary index
@@ -191,7 +191,7 @@ func writeRecords(
         }
 
         //AckTime
-        ackTime := claimTime.AddDate(0, -1*rand.Intn(2), -1*rand.Intn(31))
+        ackTime := claimTime.AddDate(0, rand.Intn(2),rand.Intn(31))
         claim.AckTime = ackTime.Unix()
 
         //PaymentInfo

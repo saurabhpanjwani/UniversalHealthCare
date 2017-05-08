@@ -6,15 +6,15 @@ package shared
 type ClaimState int
 
 const (
-    ClaimFiled ClaimState = iota + 1
-    ClaimDocumented
-    ClaimApproved
-    ClaimPaid
-    ClaimRejected
-    ClaimAcknowledged
-    ClaimContested
-    ClaimOnHold
-    MaxClaimState = ClaimOnHold
+    ClaimFiled ClaimState = iota + 1 //1
+    ClaimDocumented                  //2
+    ClaimApproved                    //3
+    ClaimPaid                        //4
+    ClaimRejected                    //5
+    ClaimAcknowledged                //6
+    ClaimContested                   //7
+    ClaimOnHold                      //8
+    MaxClaimState = ClaimOnHold      //8 ---> Last
 )
 
 /* 

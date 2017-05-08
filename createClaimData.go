@@ -103,7 +103,7 @@ func writeRecords(
         // Add entries with exisiting InsurerID or create a new InsurerID?
         if (rand.Intn(2)==1) && len(insurers) > 0 {
             // Pick from existing entries
-            claim.HospitalID = insurers[rand.Intn(len(insurers))] 
+            claim.InsurerID = insurers[rand.Intn(len(insurers))] 
         } else {
             // New Insurer ID
             claim.InsurerID =uuid.New().String() 
@@ -118,9 +118,9 @@ func writeRecords(
         //25 is chosen so that some records wil exceed the 24 hour discharge filing period
         claim.DischargeTime = claimTime.Add(time.Duration(-1*rand.Intn(25))*time.Hour).Unix()
         
-        //ClaimAmt - Minimum is Rs.10, Maximum Rs. 10cr
+        //ClaimAmt - Minimum is Rs.10, Maximum Rs. 1cr
         minAmt := 10
-        maxAmt := 100000000
+        maxAmt := 10000000
         claim.ClaimAmt = float32(minAmt + rand.Intn(maxAmt)) * rand.Float32()
 
         //Penalty, to a maximum of the claimAmt

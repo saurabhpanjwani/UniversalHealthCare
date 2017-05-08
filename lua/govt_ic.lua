@@ -1,5 +1,5 @@
-function count_and_amount(s)
-    function mapper(rec)
+function agg_count_and_amount(s)
+    function mapper(out, rec)
 	  out['amt'] = (out['amt'] or 0) + rec['ClaimAmt']
 	  out['count'] = (out['count'] or 0) + 1
       	  if rec['ClaimState'] == 6 then
@@ -8,14 +8,14 @@ function count_and_amount(s)
 	  end
         return out
     end
-    local function reducer(v1, v2)
+    local function reducer(a,b)
         local out = map() 
         out['amt'] = a['amt'] + b['amt']
         out['count'] = a['count'] + b['count']
         out['settled_count'] = a['settled_count'] + b['settled_count']
         return out 
     end
-    return s : map({count = 0, amt = 0, settled_count = 0, settle_amt =0},mapper) : reduce(reducer)
+    return s : aggregate(map{count = 0, amt = 0, settled_count = 0, settle_amt =0},mapper) : reduce(reducer)
 end
 
 
@@ -180,24 +180,4 @@ function audited_claim(s, icID)
     end 
 
     return s : aggregate(map{count = 0, amt = 0, fraud_count =0, fraud_amt = 0}, mapper) : reduce(reducer)
-end
-
-function claim_detail(s)
-    function mapper(rec)
-	  out['amt'] = (out['amt'] or 0) + rec['ClaimAmt']
-	  out['count'] = (out['count'] or 0) + 1
-      	  if rec['ClaimState'] == 6 then
-              out['settled_count'] = (out['settled_count'] or 0) + 1
-              out['settled_amt'] = (out['settled_amt'] or 0) + rec['ClaimAmt']
-	  end
-        return out
-    end
-    local function reducer(v1, v2)
-        local out = map() 
-        out['amt'] = a['amt'] + b['amt']
-        out['count'] = a['count'] + b['count']
-        out['settled_count'] = a['settled_count'] + b['settled_count']
-        return out 
-    end
-    return s : map({count = 0, amt = 0, settled_count = 0, settle_amt =0},mapper) : reduce(reducer)
 end

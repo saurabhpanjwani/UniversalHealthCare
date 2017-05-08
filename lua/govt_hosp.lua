@@ -4,7 +4,7 @@ function avg_discharge_to_claim(s, hospID)
         if not hospID or rec['HospitalID'] == hospID then
 		local diff = rec['ClaimFileTime'] - rec['DischargeTime']
 		if diff > 0 then
-		  out['sum'] = (out['sum'] or 0) + diff
+		  out['AggTime'] = (out['AggTime'] or 0) + diff
 		  out['count'] = (out['count'] or 0) + 1 
 		end
         end 
@@ -14,12 +14,12 @@ function avg_discharge_to_claim(s, hospID)
     local function reducer(a, b)
         local out = map() 
 
-        out['sum'] = a['sum'] + b['sum']
+        out['AggTime'] = a['AggTime'] + b['AggTime']
         out['count'] = a['count'] + b['count']
         return out 
     end 
 
-    return s : aggregate(map{sum = 0, count = 0}, mapper) : reduce(reducer)
+    return s : aggregate(map{AggTime = 0, count = 0}, mapper) : reduce(reducer)
 end
 
 local function map_claim(record)

@@ -1,17 +1,16 @@
 Most of these examples can be run with optional parameters like HospID, ICID as well. 
 However, in some cases all possible combinations may be omitted. 
 
-Total Claims - 
+Total number of Claims and Amount
+-----------------------------------
 
-Total number of Claims
--------------------------
-aql> AGGREGATE govt.count() ON uhc.claimsDB 
-+---------+
-| count   |
-+---------+
-| 1000000 |
-+---------+
-1 row in set (6.782 secs)
+aql> AGGREGATE govt_ic.agg_count_and_amount() ON uhc.claimsDB
++----------------------------------------------------------------------------+
+| agg_count_a...                                                             |
++----------------------------------------------------------------------------+
+| MAP('{"amt":24997915910997.82, "settled_count":124717, "count":1000000}')  |
++----------------------------------------------------------------------------+
+1 row in set (8.486 secs)
 
 Average Processing Time
 --------------------------
@@ -39,23 +38,81 @@ For this particular IC/TPA, processing time is about 20 days.
 Outstanding Claims
 --------------------
 
-aql> AGGREGATE govt.outstanding_claim('f9e7e0d2-ddcd-46a3-aa76-a8a8a16f4131') ON uhc.claimsDB
+aql> AGGREGATE govt_ic.outstanding_claim("b38bfa33-2983-488d-9032-2c5ad2337042") ON uhc.claimsDB
++--------------------------------------------------------------------------------------+
+| outstanding...                                                                       |
++--------------------------------------------------------------------------------------+
+| MAP('{"contested_count":0, "no_action_count":0, "amt":25491382.984375, "count":2}')  |
++--------------------------------------------------------------------------------------+
+1 row in set (8.653 secs)
+
+
+aql> AGGREGATE govt_ic.outstanding_claim() ON uhc.claimsDB
++-------------------------------------------------------------------------------------------------------+
+| outstanding...                                                                                        |
++-------------------------------------------------------------------------------------------------------+
+| MAP('{"contested_count":125377, "no_action_count":375363, "amt":21890265228414.64, "count":875283}')  |
++-------------------------------------------------------------------------------------------------------+
+1 row in set (9.639 secs)
+
+Acknowledged And Closed Claims
+--------------------------------
+aql> AGGREGATE govt_ic.acked_claim() ON uhc.claimsDB
++--------------------------+
+| acked_claim              |
++--------------------------+
+| MAP('{"count":124717}')  |
++--------------------------+
+1 row in set (7.296 secs)
+
+aql> AGGREGATE govt_ic.acked_claim('c8ced99a-9189-4c5c-b9db-9a3a4c4ab6ce') ON uhc.claimsDB
 +---------------------+
-| outstanding...      |
+| acked_claim         |
 +---------------------+
 | MAP('{"count":1}')  |
 +---------------------+
-1 row in set (7.120 secs)
+1 row in set (7.907 secs)
 
-aql> AGGREGATE govt.outstanding_claim() ON uhc.claimsDB
-+--------------------------+
-| outstanding...           |
-+--------------------------+
-| MAP('{"count":875203}')  |
-+--------------------------+
-1 row in set (7.124 secs)
+Rejected Claims
+-----------------
 
-aql> 
+aql> select HospitalID, ClaimState, ClaimType, ClaimAmt from uhc.claimsDB where 'InsurerID'='42e84142-51ea-4c0d-96a3-c5118f1b403e'
++----------------------------------------+------------+-----------+-------------+
+| HospitalID                             | ClaimState | ClaimType | ClaimAmt    |
++----------------------------------------+------------+-----------+-------------+
+| "329646a6-961d-4c23-89ab-2f0716cc8f63" | 2          | 0         | 61599176    |
+| "b91c2753-ec39-4288-8088-685727caece9" | 5          | 2         | 71173496    |
+| "e930173c-1062-4cab-9aae-7632467f3778" | 2          | 0         | 536866.4375 |
+| "acc51b3a-fc90-4101-acbf-19bc1e76fd37" | 8          | 0         | 7113618     |
+| "61086542-2650-43d5-b5c7-026abd5c1952" | 2          | 0         | 39019484    |
++----------------------------------------+------------+-----------+-------------+
+5 rows in set (0.001 secs)
 
+aql> AGGREGATE govt_ic.rejected_claim('42e84142-51ea-4c0d-96a3-c5118f1b403e') ON uhc.claimsDB
++-------------------------------------------------------------------+
+| rejected_claim                                                    |
++-------------------------------------------------------------------+
+| MAP('{"settled_amt":0, "amt":71173496, "count":1, "settled":0}')  |
++-------------------------------------------------------------------+
+1 row in set (7.547 secs)
 
+Audited and Fraudulent Claims
+------------------------------
+aql> AGGREGATE govt_ic.audited_claim('42e84142-51ea-4c0d-96a3-c5118f1b403e') ON uhc.claimsDB
++---------------------------------------------------------------------+
+| audited_claim                                                       |
++---------------------------------------------------------------------+
+| MAP('{"amt":78287114, "fraud_amt":0, "count":2, "fraud_count":0}')  |
++---------------------------------------------------------------------+
+1 row in set (8.236 secs)
 
+aql> AGGREGATE govt_ic.audited_claim() ON uhc.claimsDB
++------------------------------------------------------------------------------------------------------+
+| audited_claim                                                                                        |
++------------------------------------------------------------------------------------------------------+
+| MAP('{"amt":18748829504890.95, "fraud_amt":94417613764.92529, "count":749724, "fraud_count":3763}')  |
++------------------------------------------------------------------------------------------------------+
+1 row in set (25.688 secs)
+
+Claim Details - 
+---------------

@@ -85,6 +85,10 @@ This analysis may be applied across Claims, Entities, Procedures, and at geograp
 
 This module will also enable data analytics to be run on top of the UHC system in order for various government agencies, insurers and hospitals to monitor the general health of the public.
 
+Incentive to Report Fraud -
+-----------------------------
+In order to assist fraud detection, it is suggested that beneficiaries be given incentives to report fraudulent claims filing. This necessrily means the identity of the reporter should be confidential. This will boost the Fraud management system, and also bring in resistance toengaging in unlawful practises.
+
 References -
 -------------
 1. Healthcare Fraud Management using BigData - Whitepaper by Trendwise Analytics

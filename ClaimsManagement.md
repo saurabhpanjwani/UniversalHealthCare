@@ -56,8 +56,34 @@ A TPA sign off is still required in order to set the status of the claims to acc
 
 Fraud Management Engine
 -------------------------
-Fraud Management System is a 
+Fraud Management System is a generic system which will collect anonymised claims data in order to identify current trends and be able to suggest to the Trust Score Engine with higher accuracy.
 
+Some examples of data analysed by Fraud Management System are (courtesy Trendwise Analytics) -
+
+1. Doctors, who treated whopping, say 50+ patients in a day. 
+2. Providers administering far higher rates of tests than others. 
+3. Providers costing far more, per patient basis, than others. 
+4. Providers with high ratio of distance patients. 
+5. Providers prescribing certain drugs at higher rate than others. 
+6. Distance between claimant’s home address and medical provider 
+7. Multiple medical opinions/providers 
+8. Changing providers for the same treatment (possibly correlated with other claim activity) 
+9. High number of treatments for type of injury 
+10. Abnormally long treatment time off for the type of injury 
+11. Accident severity does not correlate with severity of injury 
+12. Providers billing for services not provided. 
+13. Providers administering (more) tests and treatments or providing equipments that are not medically necessary. 
+14. Providers administering more expensive tests and equipments (up-coding). 
+15. Providers multiple-billing for services rendered. 
+16. Providers unbundling or billing separately for laboratory tests performed together to get higher reimbursements. 
+17. Providers charging more than peers for the same services. 
+18. Providers conducting medically unrelated procedures and services. 
+19. Policy holders traveling long distance for treatment which may be available nearby. (Possibly scams by bogus providers.) 
+20. Policy holders letting others use their healthcare cards. 
+
+This analysis may be applied across Claims, Entities, Procedures, and at geographical units like District, City, State, Country, etc.
+
+This module will also enable data analytics to be run on top of the UHC system in order for various government agencies, insurers and hospitals to monitor the general health of the public.
 
 References -
 -------------

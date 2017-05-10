@@ -113,7 +113,7 @@ For all states indicating rejected claims -
 
 For all states indicating settled claims -
 
-13. TDS Head - Name of the approving TPA authority, if flow type == Accepted. Null for all other flows.
+13. TDS Head - TDS Code, PAN, (all Form 16 information), %TDS paid, accounting code, ...
 14. Payment information - Amount, Timestamp, From IC/TPA UHC ID, To Provider UHC ID, Payment Transaction ID, if flow type == Accepted and state > = Claim Paid. Null for all other states.
 
 For final state (Claim Acknowledged)

@@ -16,44 +16,64 @@ New Claims Workflows -
 
 Various possible flows for a claim -
 
-Claim Filed -> Claim Documented ->Claim Approved -> Claim Paid -> Claim (Payment) Acknowledged 
-Claim Filed -> Claim Documented ->Claim Approved -> Claim Paid -> Claim (Payment) Contested
-Claim Filed -> Claim Documented ->Claim Approved -> Claim (Payment) Contested 
+Claim Accepted Type Flow
+-------------------------
+Claim Filed -> Claim Authorised -> Claim Documented ->Claim Approved -> Claim Paid -> Claim (Payment) Acknowledged 
+Claim Filed -> Claim Authorised -> Claim Documented ->Claim Approved -> Claim Paid -> Claim (Payment) Contested
+Claim Filed -> Claim Authorised -> Claim Documented ->Claim Approved -> Claim (Payment) Contested 
 
-Claim Filed -> Claim Documented ->Claim Rejected -> Claim (Rejected) Acknowledged 
-Claim Filed -> Claim Documented ->Claim Rejected -> Claim (Rejected) Contested
 
-Claim Filed -> Claim Documented ->Claim Hold -> Claim Documented -> ... -> Claim Approved/Claim Rejected flows
+Claim Rejected Type Flow 
+--------------------------
+Claim Filed -> Claim Authorised -> Claim Documented ->Claim Rejected -> Claim (Rejected) Acknowledged 
+Claim Filed -> Claim Authorised -> Claim Documented ->Claim Rejected -> Claim (Rejected) Contested
 
-Claim Filed -> Claim Documented -> Claim (No Action) Contested
+Claim No Action Flows -
+------------------------
+Claim Filed -> Claim Authorised -> Claim Documented ->Claim Hold -> Claim Documented -> ... -> Claim Approved/Claim Rejected flows
+
+Claim Filed -> Claim Authorised -> Claim Documented -> Claim (No Action) Contested
 
 Claim Contested -> Claim Accepted / Claim Rejected flows
 
+Claim Unauthorised Flow -
+-------------------------
+
+Claim Filed -> Claim Failed Auth
+
 1. Claim Filed - When care provider uses the system to file a new claim
-2. Claim Documented - When care provider updates an existing claim with additional information
+2. Claim Authorised - This requires -
+   a. Beneficiary Card Read / Authentication using Aadhar biometrics to prove she/he was physically present.
+   b. Provider Card Read to prove the beneficiary indeed went to the care provider.
+   
+3. Claim Documented - When care provider updates an existing claim with additional information
 
 At this point, IC/TPA is able to see the claim. The possible workflows here are -
 
-3. Claim Accepted - IC/TPA reviews the claim and approves the claim for payment
-4. Claim Paid - IC/TPA make the payment for the said claim. 
+4. Claim Accepted - IC/TPA reviews the claim and approves the claim for payment
+5. Claim Paid - IC/TPA make the payment for the said claim. 
 
-5. Claim Rejected - When IC/TPA reviews the claim and rejects it based on available information.
+6. Claim Rejected - When IC/TPA reviews the claim and rejects it based on available information.
 
-6. Claim On Hold - When IC/TPA reviews the claim and requires more information to process it.
+7. Claim On Hold - When IC/TPA reviews the claim and requires more information to process it.
 
 The endflow of the claim is handled by the care provider -
 
-7. Claim Acknowledged - The claim is acknowledged for IC/TPA response - Payment / Rejected claim. No response in closing a claim within the stipulated time will lead to auto-acknowledgement of the claim by the system.
+8. Claim Acknowledged - The claim is acknowledged for IC/TPA response - Payment / Rejected claim. No response in closing a claim within the stipulated time will lead to auto-acknowledgement of the claim by the system.
 
-8. Claim Contested - The claim is contested for IC/TPA response - Payment / Rejected / No action
+9. Claim Contested - The claim is contested for IC/TPA response - Payment / Rejected / No action
 
+If the claim fails authorisation then-
 
-Flagged/Audited Claim Workflows -
+10. Claim Fail Auth - This end state indicates an attempt to file a claim with invalid authentication/authorization of the care provider and/or the beneficiary.
+
+Audited Claim Workflows -
 ---------------------------------
 
-< Claim state > Claims Filed > may set Claim Flagged
+Any Claim state beyond the Claims Filed state may set Claim Audited flag
 
-Claim Flagged Bit - Claim may be flagged by IC/TPA for suspected fraud analysis, or by health care providers to contest on a later date. This state indicates the claim is flagged for further analysis underway.
+Claim Audited Bit - Claim may be audited by IC/TPA for suspected fraud analysis, or by health care providers to contest at a later date. 
+This state indicates the claim is under audit for further analysis underway, or was audited and has been cleared or found fraudulent.
 A claim may be flagged in any state of the claim beyond the initial filing.
 
 
@@ -81,7 +101,7 @@ Claims data will contain the following parameters.
 6. Timestamp of Claim Filing - Date
 7. Penalty (1% of amount claimed per 15 days of delay) - Float
 8. Status of Claim - Enum (9 states as enumerated in the workflow)
-9. Flow Type  - Accepted / Rejected / No Action - Indicate what kind of claim closure was acknowledged / contested / flagged. Default is No Action.
+9. Flow Type  - Accepted / Rejected / No Action / Unauthorized - Indicate what kind of claim closure was acknowledged / contested / audited. Default is No Action.
 10. IsFlagged - Boolean (Default False) - Indicates if this claim is/was under audit. Once set, this flag cannot be reset. Any closure on audit results will still follow the usual closure workflows.
 11. Log Trail - Array of Log Type {< From State > , < To State >, < Timestamp > , < UHC ID of the Modifier > , < Optional Comments > }. This will enumerate the trail of the claim lifecycle. 
 
@@ -108,9 +128,9 @@ For claim that have IsFlagged == True
 View of Data For Various Entities - Hospital / Health Care Provider
 ---------------------------------------------------------------------
 
-1. Aggregate Claims View For a Time Period - Total number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action), Average time of claim settlement across all TPAs/ICs, Total number of cases audited, Average time taken to file a new claim after discharge of the beneficiary, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
+1. Aggregate Claims View For a Time Period - Total number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action), Average time of claim settlement across all TPAs/ICs, Total number of cases audited, Average time taken to file a new claim after discharge of the beneficiary, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent,Number of cases unauthorized.
 
-2. Per IC/TPA View For a Time Period - Number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action) with this IC/TPA, Average time of claim settlement for this IC/TPA, Number of clases audited by this TPA, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
+2. Per IC/TPA View For a Time Period - Number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action) with this IC/TPA, Average time of claim settlement for this IC/TPA, Number of clases audited by this TPA, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent,Number of cases unauthorized.
 
 3. Detailed View of a claim filed.
 
@@ -118,9 +138,9 @@ View of Data For Various Entities - Hospital / Health Care Provider
 View of Data For Various Entities - IC/TPA
 -------------------------------------------
 
-1. Aggregate Claims View For a Time Period - Total number of claims documented for this IC/TPA, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action), Average time of claim settlement across all care providers, Total number of cases audited, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
+1. Aggregate Claims View For a Time Period - Total number of claims documented for this IC/TPA, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action), Average time of claim settlement across all care providers, Total number of cases audited, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent,Number of cases unauthorized.
 
-2. Per Hospital/Care Provider View For a Time Period - Number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action) with this IC/TPA, Average time of claim settlement for this IC/TPA, Number of clases audited by this TPA, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent.
+2. Per Hospital/Care Provider View For a Time Period - Number of claims filed, total acknowledged, total outstanding, total value of claims filed, total value of claims settled, total value of claims rejected, total value of claims still pending (No Action) with this IC/TPA, Average time of claim settlement for this IC/TPA, Number of clases audited by this TPA, Time taken to close on a claim, Number of claims contested, Number of claims deemed fraudulent,Number of cases unauthorized.
 
 3. Detailed view of a claim filed
 

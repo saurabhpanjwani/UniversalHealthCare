@@ -1,4 +1,4 @@
-##Claims Management
+Claims Management
 -------------------
 
 This document enumerates the relation between various modules in the Claims process, in order to -

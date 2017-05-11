@@ -89,6 +89,11 @@ Incentive to Report Fraud -
 -----------------------------
 In order to assist fraud detection, it is suggested that beneficiaries be given incentives to report fraudulent claims filing. This necessrily means the identity of the reporter should be confidential. This will boost the Fraud management system, and also bring in resistance toengaging in unlawful practises.
 
+Score Management - Claim Score (with Entity Score computed at runtime)
+----------------------------------------------------------------------
+There is an implicit entity score (provider score and beneficiary score). These are computed at run time to aid computing the claim score. Why are these runtime? A lot of these parameters are based on current trends as well (number of patients treated on this day/week/month, reporting Lags,Treatment Characteristics and Procedures, etc and for beneficiary it might be the number of times claims have been filed in the past week/month/year). Therefore, these scores are moving, and not static. Hence, they will be computed at runtime to arrive at a score for the claim.
+
+
 References -
 -------------
 1. Healthcare Fraud Management using BigData - Whitepaper by Trendwise Analytics

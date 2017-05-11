@@ -1,4 +1,4 @@
-Claims Management
+##Claims Management
 -------------------
 
 This document enumerates the relation between various modules in the Claims process, in order to -
@@ -14,7 +14,7 @@ A trust score is the probability that a given claim is not a fraud.
 A mathematical predictor model will be used in order to arrive at a trust score for any claim that is under processing. 
 Trust score for a claim is computed on both the entities as well as past anonymised trends -
 
-Entities Related Historic Trends -
+Entities (Health Care Provider and Beneficiary) Related Historic Trends -
 1. Percentage of claims filed by the entities (health care provider, Doctor, or the beneficiary) Accepted with high confidence (Adjudication engine score is >80%)
 2. Percentage of claims filed by the entities (health care provider, Doctor, or the beneficiary) Not Accepted with high confidence (<30% score by Adjucation engine)
 3. Percentage of claims filed by the entities (health care provider, Doctor, or the beneficiary) audited and found fradulent (in retrospect or during claims filing process)
@@ -39,12 +39,13 @@ General Historic Trends (coming from Fraud Management Engine) -
 10. Average Number of Unauthorized claims from the entities
 
 
-Adjudication Recommender Engine
---------------------------------
+Adjudication Recommender System (ARS)
+--------------------------------------
 The Adjudication engine acts as a recommender system for Insurers. It will assist the ICs and TPAs to make faster and more data-driven decisions when a new claim is presented.
 
 The adjudication engine will do the following -
-1. Parse the Policy DB and apply it on the claim presented. If not found in order, the claim is strongly recommended to be rejected.
+1. Parse the Policy DB and apply it on the claim presented. 
+   If not found in order, the claim is strongly recommended to be rejected.
 
 2. Based on the Claims Trust Score Engine, the Adjudication Engine will either -
    a. Strongly recommend Accepting the claim (>80% confidence) citing relevant parameters from Claim Trust Score Engine
@@ -54,7 +55,7 @@ The adjudication engine will do the following -
 A TPA sign off is still required in order to set the status of the claims to accepted or rejected. The claims trust score engine is expected to learn from TPA action on the claim for future.
 
 
-Fraud Management Engine
+Fraud Management System (FMS)
 -------------------------
 Fraud Management System is a generic system which will collect anonymised claims data in order to identify current trends and be able to suggest to the Trust Score Engine with higher accuracy.
 
@@ -93,6 +94,54 @@ Score Management - Claim Score (with Entity Score computed at runtime)
 ----------------------------------------------------------------------
 There is an implicit entity score (provider score and beneficiary score). These are computed at run time to aid computing the claim score. Why are these runtime? A lot of these parameters are based on current trends as well (number of patients treated on this day/week/month, reporting Lags,Treatment Characteristics and Procedures, etc and for beneficiary it might be the number of times claims have been filed in the past week/month/year). Therefore, these scores are moving, and not static. Hence, they will be computed at runtime to arrive at a score for the claim.
 
+
+Tying up Claims Management - How Blocks Interact
+-------------------------------------------------
+1. New claim processing requested from Adjudication Engine.
+
+2. Adjudication Recommender System (ARS) requests Policy Details from Policy DB
+
+3. Policy DB returns details of Policy.
+
+4. If claim is found to not conform to policy, it is rejected with appropriate Reject Code, and exits
+
+5. Adjudication Engine requests Trust Management system (TMS) for a Claim Trust Score.
+
+6. TMS requests provider score, beneficiary score, and past trends for this procedure from Fraud Management System (FMS).
+
+7. FMS reverts with historic trends for procedure as well as historic trends on beneficiary and provider.
+
+8. TMS also aggregates current data on beneficiary and provider from the Claims DB
+
+9. TMS arrives at a beneficiary score, provider score, and procedure score from data obtained in #7 and #8
+
+10. TMS aggregates all scores generated in #9 and arrives at a Claim Score.
+
+11. TMS sends a Claim Score to the Adjudication Engine
+
+12. ARS recommends acceptance (claim score > 80%) , rejection (claim score < 30%) or TPA intervention (otherwise).
+                                                  
+                                                 
+                                                  
+                                                  
+                                                  Claims DB
+                                                      |
+                                                      |
+                                           c. Entities Current Trends
+                                                      |
+                                                     \|/
+                    b. General Historic Trends                        d. Compute Claim Score
+Fraud Management System    ------------->      Trust Management System  ---------- >   Adjudication Engine  -----> Recommend 
+                     of Entities and Procedure                                                                       Action
+                                                                                            /|\
+                                                                                             |
+                                                                                      a. Policy Details
+                                                                                             |
+                                                                                             |
+                                                                                       Policy Engine DB
+                                                
+                                                
+                                                
 
 References -
 -------------
